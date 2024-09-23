@@ -1,0 +1,25 @@
+name: smb2home
+base: core22   # Podstawowy system bazowy (core18, core20, core22 itp.)
+version: '1.0'
+summary: A script to quickly mount SMB resources from within your home directory.
+description: |
+  A script to quickly mount SMB resources from within your home directory.
+  Folders for mounting are created and deleted automatically. The script
+  checks what shares on a given SMB server are available and is able to
+  mount them all at once.
+  
+grade: devel    # stable (stabilna wersja), devel (rozwój)
+confinement: classic # confinement: strict, devmode, classic
+
+parts:
+  moj-skrypt:
+    plugin: dump
+    source: .
+    organize:
+      bin/smb2home: bin/smb2home
+
+apps:
+  skrypt-bash:
+    command: bin/smb2home
+#    plugs:
+#      - network
