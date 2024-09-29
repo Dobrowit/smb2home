@@ -2,7 +2,7 @@
 ## Ustawienia
 ###############################################################################
 SRV='192.168.0.100'
-OPT="uid=$UID,iocharset=utf8,rw,noperm,file_mode=0777,dir_mode=0777"
+OPT="uid=$UID,gid=$(id -g $USER),iocharset=utf8,rw,noperm,file_mode=0777,dir_mode=0777"
 BASEDIR="$HOME/mnt"
 BASEDIR_GVFS="$HOME/mnt-gvfs"
 ###############################################################################
@@ -262,11 +262,11 @@ function help2() {
 }
 
 function czysciciel() {
-  if [ -z "$(ls -A "$BASEDIR" 2>/dev/null)" ]; then
-      rmdir "$BASEDIR"
+  if [ -d "$BASEDIR" ]; then
+    rmdir "$BASEDIR"
   fi
-  if [ -z "$(ls -A "$BASEDIR_GVFS" 2>/dev/null)" ]; then
-      rmdir "$BASEDIR_GVFS"
+  if [ -d "$BASEDIR_GVFS" ]; then
+    rmdir "$BASEDIR_GVFS"
   fi
 }
 
@@ -276,16 +276,21 @@ POLECENIA="smbclient secret-tool printf gio"
 OK=true
 
 for p in $POLECENIA; do
-    if ! command -v "$p" &> /dev/null; then
-        echo "$(printf "$K01" "$p")" # "Błąd: Polecenie $p nie jest dostępne w systemie."
-        OK=false
-    fi
+  if ! command -v "$p" &> /dev/null; then
+    echo "$(printf "$K01" "$p")" # "Błąd: Polecenie $p nie jest dostępne w systemie."
+    OK=false
+  fi
 done
 
 if [ "$OK" = false ]; then
-    echo $K02 # Zakończenie skryptu z powodu brakujących poleceń.
-    echo $K03 # Zainstaluj brakujące polecenia.
+  echo $K02 # Zakończenie skryptu z powodu brakujących poleceń.
+  echo $K03 # Zainstaluj brakujące polecenia.
+  sudo apt install smbclient libsecret-tools
+  if [ "$?" = "0" ]; then
+	  echo "Zainstalowano pomyślnie."
+  else
     exit 1
+	fi
 fi
 
 ## Wczytanie adresu serwera z pliku konfiguracyjnego
@@ -339,10 +344,10 @@ if [ "$1" = "-l" ]; then
   ls /run/user/$UID/gvfs
   # POPRAWIĆ!!!!
   if [ $? -eq 0 ]; then
-      exit 0
-    else
-      echo $K07 # Nic nie jest zamontowane.
-      exit 1
+    exit 0
+  else
+    echo $K07 # Nic nie jest zamontowane.
+    exit 1
   fi
   exit 1
 fi
