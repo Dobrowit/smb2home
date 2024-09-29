@@ -9,7 +9,7 @@ description: |
   Folders for mounting are created and deleted automatically. The script
   checks what shares on a given SMB server are available and is able to
   mount them all at once.
-grade: devel
+grade: stable
 confinement: classic
 compression: lzo
 parts:
@@ -20,7 +20,14 @@ parts:
       smb2home.sh: bin/smb2home.sh
 #    override-build: |
 #      chmod 755 $SNAPCRAFT_PART_INSTALL/bin/smb2home.sh
+  smbclient:
+    plugin: apt
+    stage-packages:
+      - smbclient
 apps:
   skrypt-bash:
     command: bin/smb2home.sh
-    
+    plugs:
+      - password-manager-service
+      - network
+      - home
