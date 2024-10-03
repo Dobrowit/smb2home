@@ -287,7 +287,7 @@ done
 if [ "$OK" = false ]; then
   echo $K02 # Zakończenie skryptu z powodu brakujących poleceń.
   echo $K03 # Zainstaluj brakujące polecenia.
-  sudo apt install smbclient libsecret-tools
+  sudo apt install smbclient libsecret-tools libglib2.0-bin
   if [ "$?" = "0" ]; then
 	  echo "Zainstalowano pomyślnie."
   else
